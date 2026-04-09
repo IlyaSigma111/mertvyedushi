@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>«Мёртвые души» — викторина с мгновенной проверкой | Н. В. Гоголь</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, 'Segoe UI', 'Roboto', 'Times New Roman', serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1f3b2c 0%, #0e281c 100%);
+            min-height: 100vh;
+            padding: 2rem 1.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .quiz-container {
+            max-width: 950px;
+            width: 100%;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(2px);
+            border-radius: 2.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.4);
+        }
+
+        .quiz-card {
+            background: #fffaf2;
+            border-radius: 2rem;
+            overflow: hidden;
+            box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.5);
+        }
+
+        .quiz-header {
+            background: #2c553d;
+            background-image: linear-gradient(135deg, #1f4531, #143829);
+            padding: 1.2rem 2rem;
+            color: #f3efcf;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 1rem;
+            border-bottom: 4px solid #e5c687;
+        }
+
+        .title h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.2px;
+        }
+
+        .title p {
+            font-size: 0.85rem;
+            opacity: 0.92;
+            margin-top: 0.2rem;
+        }
+
+        .score-box {
+            background: #e5c687;
+            padding: 0.3rem 1.2rem;
+            border-radius: 60px;
+            color: #2a4b36;
+            font-weight: 800;
+            font-size: 1.2rem;
+        }
+
+        .quiz-body {
+            padding: 2rem 2rem 1.8rem;
+        }
+
+        .question-text {
+            font-size: 1.55rem;
+            font-weight: 600;
+            color: #2b3a2e;
+            line-height: 1.4;
+            margin-bottom: 1.5rem;
+            background: #f1efe0;
+            padding: 1rem 1.3rem;
+            border-radius: 1.5rem;
+            border-left: 8px solid #be8f4b;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .option {
+            background: white;
+            border-radius: 1.2rem;
+            border: 2px solid #e3d7c4;
+            transition: all 0.2s;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1.2rem;
+            gap: 1rem;
+        }
+
+        .option:hover:not(.disabled-option) {
+            background: #fdf5e6;
+            border-color: #be8f4b;
+            transform: scale(0.99);
+        }
+
+        .option-letter {
+            font-weight: 800;
+            background: #eee6d8;
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 60px;
+            font-size: 1.2rem;
+            color: #2c553d;
+        }
+
+        .option-text {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #2e3a2e;
+            flex: 1;
+        }
+
+        /* состояния после ответа */
+        .option.correct-answer {
+            background: #c8e6d9;
+            border-color: #2e6b3e;
+            cursor: default;
+        }
+
+        .option.wrong-answer {
+            background: #ffe0db;
+            border-color: #bc3f2a;
+            cursor: default;
+        }
+
+        .option.disabled-option {
+            pointer-events: none;
+            opacity: 0.9;
+        }
+
+        /* кнопка далее */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.8rem;
+        }
+
+        button {
+            background: #2f6748;
+            border: none;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            padding: 0.7rem 1.8rem;
+            border-radius: 2.5rem;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: scale(0.96);
+        }
+
+        button:disabled {
+            background: #86a694;
+            cursor: not-allowed;
+        }
+
+        .btn-next {
+            background: #b97f3a;
+        }
+
+        .btn-restart {
+            background: #5c6e5a;
+            margin-top: 1rem;
+        }
+
+        /* сообщение о результате ответа */
+        .feedback-message {
+            margin: 1rem 0 0.5rem;
+            padding: 0.8rem;
+            border-radius: 1.2rem;
+            font-weight: 600;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .feedback-correct {
+            background: #d4ecd7;
+            color: #1f5436;
+            border-left: 6px solid #2b7a3e;
+        }
+
+        .feedback-wrong {
+            background: #ffe0d6;
+            color: #a2341a;
+            border-left: 6px solid #bc3f2a;
+        }
+
+        .progress-info {
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            color: #6b543a;
+            font-weight: 500;
+            text-align: center;
+            background: #f6efdf;
+            padding: 0.4rem;
+            border-radius: 30px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .final-area {
+            text-align: center;
+        }
+
+        @media (max-width: 620px) {
+            .quiz-container {
+                padding: 0.8rem;
+            }
+            .quiz-body {
+                padding: 1.2rem;
+            }
+            .question-text {
+                font-size: 1.25rem;
+            }
+            .title h1 {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="quiz-container">
+    <div class="quiz-card">
+        <div class="quiz-header">
+            <div class="title">
+                <h1>📖 «Мёртвые души» · Мгновенная проверка</h1>
+                <p>Новая викторина · Ответил — сразу узнай результат</p>
+            </div>
+            <div class="score-box">
+                <span>🏆 Счёт:</span> <span id="scoreDisplay">0</span> / <span id="totalQuestionsSpan">15</span>
+            </div>
+        </div>
+        <div class="quiz-body" id="quizBody">
+            <!-- динамический рендер -->
+        </div>
+    </div>
+</div>
+
+<script>
+    // 15 НОВЫХ вопросов по поэме "Мёртвые души" (1 том)
+    const questions = [
+        {
+            text: "Какой подарок Манилов преподнёс Чичикову при расставании?",
+            options: ["Деревянную шкатулку", "Книгу с закладкой", "Свои мёртвые души (даром) и медную пуговицу", "Серебряный портсигар"],
+            correct: 2
+        },
+        {
+            text: "Как звали жену Манилова?",
+            options: ["Лизавета Петровна", "Анна Григорьевна", "Софья Павловна", "Лизанька (Лизавета)"],
+            correct: 0   // Лизaвета Петровна (по тексту)
+        },
+        {
+            text: "Какое блюдо, по словам Собакевича, подавали на обеде у полицмейстера?",
+            options: ["Осетрина", "Бараний бок с кашей", "Свинья с хреном", "Борщ с пирогами"],
+            correct: 1   // "бараний бок с кашей"
+        },
+        {
+            text: "Какую фамилию дал Чичиков «мёртвым душам», составляя купчую крепость?",
+            options: ["Настоящие фамилии умерших крестьян", "Фамилии помещиков", "Придуманные звучные фамилии (например, Канапатьев, Попов)", "Он не указывал фамилии"],
+            correct: 0   // он использовал реальные фамилии из ревизских сказок
+        },
+        {
+            text: "Кто из помещиков хвастался, что у него «межа от дуба до дуба», и ел «целого осетра»?",
+            options: ["Ноздрёв", "Собакевич", "Плюшкин", "Манилов"],
+            correct: 1
+        },
+        {
+            text: "Какую историю рассказывал Ноздрёв о своей попытке купить лошадей у Чичикова (враньё)?",
+            options: ["Что Чичиков проиграл их в карты", "Что кони были в яблоках", "Что он отдал за них мёртвые души", "Никакой, он просто хвастался собакой"],
+            correct: 0   // он врал, что Чичиков проиграл
+        },
+        {
+            text: "Как называлась деревня Коробочки?",
+            options: ["Заманиловка", "Мануйловка", "Чичиково", "Нееловка"],
+            correct: 1   // Мануйловка
+        },
+        {
+            text: "Кто из слуг Чичикова читал всё подряд, не вникая в смысл, и имел особый запах?",
+            options: ["Селифан", "Петрушка", "Григорий", "Миша"],
+            correct: 1   // Петрушка
+        },
+        {
+            text: "Как звали кучера Чичикова?",
+            options: ["Петрушка", "Селифан", "Захар", "Фирс"],
+            correct: 1
+        },
+        {
+            text: "Какая вещь в доме Плюшкина указывала на то, что когда-то здесь жил просвещённый человек?",
+            options: ["Старая библиотека", "Заклеенное окно", "Старая шкатулка с бюстиком", "Забытая книга и зубочистка"],
+            correct: 3   // зубочистка, книга
+        },
+        {
+            text: "Сколько примерно душ (крестьян) умерло у Плюшкина по его словам?",
+            options: ["Более 50", "Более 100", "Более 200", "Более 300"],
+            correct: 1   // больше ста (120)
+        },
+        {
+            text: "Кого сравнивали с «средней величины медведем» в поэме?",
+            options: ["Собакевича", "Губернатора", "Плюшкина", "Чичикова"],
+            correct: 0
+        },
+        {
+            text: "Какая деталь внешности Чичикова постоянно подчёркивается автором?",
+            options: ["Рыжие волосы", "Лысина", "Не красавец, но и не дурной наружности, не слишком толст, не слишком тонок", "Борода и усы"],
+            correct: 2
+        },
+        {
+            text: "Как звали гувернантку в доме Манилова, которая учила детей?",
+            options: ["Мадам Бонжур", "Мадам Криспо", "Мадам Фенелло", "Мадам Лорен"],
+            correct: 2   // мадам Фенелло (из текста: «Фенелло, а может, и иначе»)
+        },
+        {
+            text: "Что хотел купить Чичиков на самом деле, затеяв аферу с мёртвыми душами?",
+            options: ["Имение в Херсонской губернии", "Дом в Петербурге", "Лошадей для разведения", "Фабрику"],
+            correct: 0   // заложить мёртвые души в опекунский совет и купить настоящее имение
+        }
+    ];
+
+    const totalQ = questions.length;
+    document.getElementById("totalQuestionsSpan").innerText = totalQ;
+
+    // состояние
+    let currentIndex = 0;
+    let userScores = new Array(totalQ).fill(false);   // true/false за каждый вопрос
+    let answered = new Array(totalQ).fill(false);     // отвечал ли на вопрос
+    let selectedOption = new Array(totalQ).fill(null); // индекс выбранного варианта
+    let quizFinished = false;                          // все вопросы пройдены
+
+    const quizBody = document.getElementById("quizBody");
+    const scoreSpan = document.getElementById("scoreDisplay");
+
+    function updateScoreUI() {
+        let correctCount = userScores.filter(v => v === true).length;
+        scoreSpan.innerText = correctCount;
+    }
+
+    // обработка ответа на текущий вопрос
+    function checkAnswer(optIndex) {
+        if (answered[currentIndex] || quizFinished) return; // уже отвечено или викторина завершена
+
+        const isCorrect = (optIndex === questions[currentIndex].correct);
+        // сохраняем результаты
+        answered[currentIndex] = true;
+        selectedOption[currentIndex] = optIndex;
+        userScores[currentIndex] = isCorrect;
+        updateScoreUI();
+        // перерисовать текущий вопрос с подсветкой и сообщением
+        renderCurrentQuestionWithFeedback(optIndex, isCorrect);
+    }
+
+    function renderCurrentQuestionWithFeedback(chosenIdx, isCorrect) {
+        const q = questions[currentIndex];
+        const correctIdx = q.correct;
+
+        let optionsHtml = '';
+        const letters = ['А', 'Б', 'В', 'Г'];
+
+        q.options.forEach((opt, idx) => {
+            let additionalClasses = '';
+            if (answered[currentIndex]) {
+                // режим показа результата
+                if (idx === correctIdx) {
+                    additionalClasses = 'correct-answer';
+                } else if (idx === chosenIdx && idx !== correctIdx) {
+                    additionalClasses = 'wrong-answer';
+                }
+                additionalClasses += ' disabled-option';
+            }
+            optionsHtml += `
+                <div class="option ${additionalClasses}" data-opt-index="${idx}">
+                    <div class="option-letter">${letters[idx]}</div>
+                    <div class="option-text">${escapeHtml(opt)}</div>
+                </div>
+            `;
+        });
+
+        const feedbackMsg = isCorrect 
+            ? '<div class="feedback-message feedback-correct">✅ Верно! Правильный ответ: ' + escapeHtml(q.options[correctIdx]) + '</div>'
+            : '<div class="feedback-message feedback-wrong">❌ Ошибка! Правильный ответ: ' + escapeHtml(q.options[correctIdx]) + '</div>';
+
+        const nextButtonDisabled = !answered[currentIndex];
+        const isLastQuestion = (currentIndex === totalQ - 1);
+        const nextBtnText = isLastQuestion ? '🏁 Завершить' : '➡️ Следующий вопрос';
+
+        const normalHtml = `
+            <div class="question-text">
+                ${currentIndex + 1}. ${escapeHtml(q.text)}
+            </div>
+            <div class="options-list" id="optionsContainer">
+                ${optionsHtml}
+            </div>
+            ${answered[currentIndex] ? feedbackMsg : ''}
+            <div class="nav-buttons">
+                <button id="prevBtn" ${currentIndex === 0 ? 'disabled' : ''}>◀ Назад</button>
+                <button id="nextBtn" class="btn-next" ${nextButtonDisabled ? 'disabled' : ''}>${nextBtnText}</button>
+            </div>
+            <div class="progress-info">
+                📍 Вопрос ${currentIndex+1} из ${totalQ} | Правильных ответов: ${userScores.filter(v=>v===true).length} из ${totalQ}
+            </div>
+        `;
+
+        quizBody.innerHTML = normalHtml;
+
+        // обработчики для опций (только если вопрос ещё не отвечен)
+        if (!answered[currentIndex]) {
+            const optionDivs = document.querySelectorAll('.option');
+            optionDivs.forEach(div => {
+                const optIdx = parseInt(div.dataset.optIndex);
+                div.addEventListener('click', () => {
+                    if (!answered[currentIndex] && !quizFinished) {
+                        checkAnswer(optIdx);
+                    }
+                });
+            });
+        }
+
+        // кнопки навигации
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => {
+                if (currentIndex > 0 && !quizFinished) {
+                    currentIndex--;
+                    renderCurrentQuestionSimple();
+                }
+            });
+        }
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => {
+                if (!answered[currentIndex]) return;
+                if (isLastQuestion) {
+                    finishQuiz();
+                } else {
+                    if (currentIndex + 1 < totalQ) {
+                        currentIndex++;
+                        renderCurrentQuestionSimple();
+                    }
+                }
+            });
+        }
+    }
+
+    // обычный рендер вопроса (без мгновенного сообщения, просто состояние)
+    function renderCurrentQuestionSimple() {
+        const q = questions[currentIndex];
+        const alreadyAnswered = answered[currentIndex];
+        const chosenIdx = selectedOption[currentIndex];
+        const correctIdx = q.correct;
+
+        let optionsHtml = '';
+        const letters = ['А', 'Б', 'В', 'Г'];
+
+        q.options.forEach((opt, idx) => {
+            let additionalClasses = '';
+            if (alreadyAnswered) {
+                if (idx === correctIdx) additionalClasses = 'correct-answer';
+                else if (idx === chosenIdx && idx !== correctIdx) additionalClasses = 'wrong-answer';
+                additionalClasses += ' disabled-option';
+            }
+            optionsHtml += `
+                <div class="option ${additionalClasses}" data-opt-index="${idx}">
+                    <div class="option-letter">${letters[idx]}</div>
+                    <div class="option-text">${escapeHtml(opt)}</div>
+                </div>
+            `;
+        });
+
+        let feedbackMsg = '';
+        if (alreadyAnswered && chosenIdx !== null) {
+            const isAnsCorrect = (chosenIdx === correctIdx);
+            feedbackMsg = isAnsCorrect
+                ? '<div class="feedback-message feedback-correct">✅ Верно! Правильный ответ: ' + escapeHtml(q.options[correctIdx]) + '</div>'
+                : '<div class="feedback-message feedback-wrong">❌ Ошибка! Правильный ответ: ' + escapeHtml(q.options[correctIdx]) + '</div>';
+        }
+
+        const isLastQuestion = (currentIndex === totalQ - 1);
+        const nextBtnText = isLastQuestion ? '🏁 Завершить' : '➡️ Следующий вопрос';
+        const nextDisabled = !answered[currentIndex];
+
+        const normalHtml = `
+            <div class="question-text">
+                ${currentIndex + 1}. ${escapeHtml(q.text)}
+            </div>
+            <div class="options-list">
+                ${optionsHtml}
+            </div>
+            ${feedbackMsg}
+            <div class="nav-buttons">
+                <button id="prevBtn" ${currentIndex === 0 ? 'disabled' : ''}>◀ Назад</button>
+                <button id="nextBtn" class="btn-next" ${nextDisabled ? 'disabled' : ''}>${nextBtnText}</button>
+            </div>
+            <div class="progress-info">
+                📍 Вопрос ${currentIndex+1} из ${totalQ} | Правильных ответов: ${userScores.filter(v=>v===true).length} из ${totalQ}
+            </div>
+        `;
+
+        quizBody.innerHTML = normalHtml;
+
+        // добавление обработчиков для выбора (если вопрос ещё не отвечен)
+        if (!answered[currentIndex]) {
+            const optionDivs = document.querySelectorAll('.option');
+            optionDivs.forEach(div => {
+                const optIdx = parseInt(div.dataset.optIndex);
+                div.addEventListener('click', () => {
+                    if (!answered[currentIndex] && !quizFinished) {
+                        checkAnswer(optIdx);
+                    }
+                });
+            });
+        }
+
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => {
+                if (currentIndex > 0 && !quizFinished) {
+                    currentIndex--;
+                    renderCurrentQuestionSimple();
+                }
+            });
+        }
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => {
+                if (!answered[currentIndex]) return;
+                if (isLastQuestion) {
+                    finishQuiz();
+                } else {
+                    if (currentIndex + 1 < totalQ) {
+                        currentIndex++;
+                        renderCurrentQuestionSimple();
+                    }
+                }
+            });
+        }
+    }
+
+    function finishQuiz() {
+        if (quizFinished) return;
+        quizFinished = true;
+        const totalCorrect = userScores.filter(v => v === true).length;
+        const percent = Math.round((totalCorrect / totalQ) * 100);
+        let message = '';
+        if (percent >= 85) message = '🎓 Великолепно! Вы досконально знаете «Мёртвые души»!';
+        else if (percent >= 65) message = '📚 Хороший результат! Обратите внимание на детали характеров помещиков.';
+        else if (percent >= 45) message = '📖 Неплохо, но перечитайте главы о Коробочке и Ноздрёве.';
+        else message = '📖 Попробуйте ещё раз, внимательнее изучив поэму Гоголя.';
+
+        // итоговый экран со всеми вопросами и правильными ответами
+        let finalHtml = `<div class="question-text" style="background:#efe1cf;">📊 РЕЗУЛЬТАТ ВИКТОРИНЫ «Мёртвые души»</div>`;
+
+        for (let i = 0; i < totalQ; i++) {
+            const q = questions[i];
+            const userChoice = selectedOption[i];
+            const isAnswerCorrect = userScores[i];
+            const correctAnswerText = q.options[q.correct];
+            const userAnswerText = (userChoice !== null) ? q.options[userChoice] : "Нет ответа";
+            finalHtml += `
+                <div style="background: #faf6e8; margin-bottom: 0.8rem; padding: 0.8rem; border-radius: 1rem;">
+                    <strong>${i+1}. ${escapeHtml(q.text)}</strong><br>
+                    <span style="color: ${isAnswerCorrect ? '#2e6b3e' : '#bc3f2a'};">
+                        ${isAnswerCorrect ? '✅ Верно' : '❌ Ошибка'}
+                    </span><br>
+                    <span>📖 Правильный ответ: ${escapeHtml(correctAnswerText)}</span><br>
+                    ${!isAnswerCorrect ? `<span>✏️ Ваш ответ: ${escapeHtml(userAnswerText)}</span><br>` : ''}
+                </div>
+            `;
+        }
+
+        finalHtml += `
+            <div class="final-area">
+                <div class="feedback-message feedback-correct" style="margin-top: 0.5rem;">
+                    🎯 Итоговый счёт: ${totalCorrect} из ${totalQ} (${percent}%)<br>
+                    ${message}
+                </div>
+                <button class="btn-restart" id="restartFinalBtn">🔄 Пройти викторину заново</button>
+            </div>
+        `;
+        quizBody.innerHTML = finalHtml;
+        const restartBtn = document.getElementById('restartFinalBtn');
+        if (restartBtn) restartBtn.addEventListener('click', () => restartQuiz());
+    }
+
+    function restartQuiz() {
+        currentIndex = 0;
+        userScores = new Array(totalQ).fill(false);
+        answered = new Array(totalQ).fill(false);
+        selectedOption = new Array(totalQ).fill(null);
+        quizFinished = false;
+        updateScoreUI();
+        renderCurrentQuestionSimple();
+    }
+
+    function escapeHtml(str) {
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    // старт
+    restartQuiz();
+</script>
+</body>
+</html>
