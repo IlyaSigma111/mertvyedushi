@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>«Мёртвые души» — викторина | Н. В. Гоголь | 9 класс</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, 'Segoe UI', 'Roboto', 'Times New Roman', serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1c422b 0%, #0e2b1c 100%);
+            min-height: 100vh;
+            padding: 2rem 1.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .quiz-container {
+            max-width: 920px;
+            width: 100%;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(2px);
+            border-radius: 2.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.4);
+        }
+
+        .quiz-card {
+            background: #fffaf2;
+            border-radius: 2rem;
+            overflow: hidden;
+            box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.5);
+        }
+
+        .quiz-header {
+            background: #2c553d;
+            background-image: linear-gradient(135deg, #1f4531, #143829);
+            padding: 1.5rem 2rem;
+            color: #f3efcf;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 1rem;
+            border-bottom: 4px solid #e5c687;
+        }
+
+        .title h1 {
+            font-size: 1.9rem;
+            font-weight: 800;
+            letter-spacing: -0.2px;
+            text-shadow: 1px 1px 0 #1d3526;
+        }
+
+        .title p {
+            font-size: 0.9rem;
+            opacity: 0.92;
+            margin-top: 0.3rem;
+            font-style: italic;
+        }
+
+        .score-box {
+            background: #e5c687;
+            padding: 0.4rem 1.2rem;
+            border-radius: 60px;
+            color: #2a4b36;
+            font-weight: 800;
+            font-size: 1.3rem;
+            box-shadow: inset 0 -1px 0 rgba(0,0,0,0.1), 0 5px 12px rgba(0,0,0,0.2);
+        }
+
+        .score-box span:first-child {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .quiz-body {
+            padding: 2rem 2rem 1.8rem;
+        }
+
+        .question-text {
+            font-size: 1.55rem;
+            font-weight: 600;
+            color: #2b3a2e;
+            line-height: 1.4;
+            margin-bottom: 1.8rem;
+            background: #f1efe0;
+            padding: 1rem 1.3rem;
+            border-radius: 1.5rem;
+            border-left: 8px solid #be8f4b;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .option {
+            background: white;
+            border-radius: 1.2rem;
+            border: 2px solid #e3d7c4;
+            transition: all 0.2s;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1.2rem;
+            gap: 1rem;
+        }
+
+        .option:hover {
+            background: #fdf5e6;
+            border-color: #be8f4b;
+            transform: scale(0.99);
+        }
+
+        .option-letter {
+            font-weight: 800;
+            background: #eee6d8;
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 60px;
+            font-size: 1.2rem;
+            color: #2c553d;
+        }
+
+        .option-text {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #2e3a2e;
+            flex: 1;
+        }
+
+        .option.selected {
+            background: #e6e0cf;
+            border-color: #8b6942;
+        }
+
+        .option.correct-highlight {
+            background: #daecd9;
+            border-color: #2e6b3e;
+        }
+
+        .option.wrong-highlight {
+            background: #ffe0db;
+            border-color: #bc3f2a;
+        }
+
+        .option.disabled-option {
+            pointer-events: none;
+            opacity: 0.9;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        button {
+            background: #2f6748;
+            border: none;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            padding: 0.75rem 1.6rem;
+            border-radius: 2.5rem;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: scale(0.96);
+        }
+
+        button:disabled {
+            background: #86a694;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-next {
+            background: #b97f3a;
+            box-shadow: 0 3px 0 #664a24;
+        }
+
+        .btn-restart {
+            background: #5c6e5a;
+        }
+
+        .result-area {
+            margin-top: 1.8rem;
+            text-align: center;
+            padding-top: 1rem;
+            border-top: 2px dashed #ddd0bb;
+        }
+
+        .final-message {
+            background: #efe7d9;
+            border-radius: 2rem;
+            padding: 1rem;
+            font-weight: 600;
+            font-size: 1rem;
+            color: #3a4b38;
+        }
+
+        .progress-info {
+            margin-top: 1.2rem;
+            font-size: 0.85rem;
+            color: #6b543a;
+            font-weight: 500;
+            text-align: center;
+            background: #f6efdf;
+            padding: 0.4rem;
+            border-radius: 30px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        @media (max-width: 620px) {
+            .quiz-container {
+                padding: 0.8rem;
+            }
+            .quiz-body {
+                padding: 1.2rem;
+            }
+            .question-text {
+                font-size: 1.25rem;
+            }
+            .title h1 {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="quiz-container">
+    <div class="quiz-card">
+        <div class="quiz-header">
+            <div class="title">
+                <h1>📖 «Мёртвые души» · Гоголь</h1>
+                <p>Викторина по поэме · 9 класс · Содержание, персонажи, детали</p>
+            </div>
+            <div class="score-box">
+                <span>📜 Баллы:</span> <span id="scoreDisplay">0</span> / <span id="totalQuestionsSpan">15</span>
+            </div>
+        </div>
+        <div class="quiz-body" id="quizBody">
+            <!-- динамический рендер -->
+        </div>
+    </div>
+</div>
+
+<script>
+    // 15 вопросов по поэме "Мёртвые души" (1 том, основные персонажи, сюжет, авторские детали)
+    const questions = [
+        {
+            text: "Как звали главного героя поэмы «Мёртвые души»?",
+            options: ["Иван Александрович Хлестаков", "Павел Иванович Чичиков", "Алексей Иванович Чичиков", "Михаил Петрович Собакевич"],
+            correct: 1
+        },
+        {
+            text: "Что именно скупал Чичиков у помещиков?",
+            options: ["Крепостных крестьян (живых)", "Мёртвые души (умерших крестьян по ревизским сказкам)", "Заброшенные земли", "Старые экипажи"],
+            correct: 1
+        },
+        {
+            text: "Какой чин имел Чичиков на момент начала действия поэмы?",
+            options: ["Коллежский асессор", "Коллежский советник", "Титулярный советник", "Губернский секретарь"],
+            correct: 2   // титулярный советник (по тексту)
+        },
+        {
+            text: "Кто из помещиков первым продал Чичикову мёртвые души (и даже отдал их даром, оплатив пошлину)?",
+            options: ["Манилов", "Коробочка", "Ноздрёв", "Собакевич"],
+            correct: 0
+        },
+        {
+            text: "Какой помещик имел прозвище «дырявое человечество» и собирал в кучу всякий хлам?",
+            options: ["Плюшкин", "Собакевич", "Коробочка", "Ноздрёв"],
+            correct: 0
+        },
+        {
+            text: "Кто из помещиков был заядлым вралем, картёжником и любителем «пустить пыль в глаза»?",
+            options: ["Манилов", "Ноздрёв", "Собакевич", "Плюшкин"],
+            correct: 1
+        },
+        {
+            text: "Какая помещица продала Чичикову мёртвые души, боясь продешевить, и запомнила его как «покупателя пеньки»?",
+            options: ["Настасья Петровна Коробочка", "Софья Ивановна", "Мария Антоновна", "Феодулия Ивановна"],
+            correct: 0
+        },
+        {
+            text: "Кому принадлежало имение с «двухсотлетней» усадьбой, где всё было «прочно, без шаткости» и каждый предмет кричал: «и я Собакевич!»?",
+            options: ["Михаилу Семёновичу Собакевичу", "Степану Плюшкину", "Манилову", "Ноздрёву"],
+            correct: 0
+        },
+        {
+            text: "Как звали дочь губернатора, которую Чичиков нечаянно увлёк на балу и из-за чего попал в скандал?",
+            options: ["Анна Григорьевна", "Софья Павловна", "Елизавета", "Анна (Анеточка)"],
+            correct: 3
+        },
+        {
+            text: "Кто из персонажей поэмы рассказал Чичикову, где найти имение Плюшкина, и предупредил о его скупости?",
+            options: ["Собакевич", "Ноздрёв", "Председатель казённой палаты", "Манилов"],
+            correct: 2   // председатель палаты (Иван Григорьевич)
+        },
+        {
+            text: "Как называлась бричка, на которой путешествовал Чичиков?",
+            options: ["Тарантас", "Коляска", "Дрожки", "Бричка (с рессорами)"],
+            correct: 3   // в тексте просто бричка, но часто упоминается как «бричка»
+        },
+        {
+            text: "Какой эпизод завершает первый том «Мёртвых душ»?",
+            options: ["Прибытие Чичикова в город NN", "Птица-тройка и лирическое отступление о Руси", "Бал у губернатора", "Арест Чичикова"],
+            correct: 1
+        },
+        {
+            text: "Кого из слуг Чичикова автор описывает как низкорослого, любителя поспать, но с некоторой хитрецой?",
+            options: ["Петрушку", "Селифана", "Захара", "Григория"],
+            correct: 1   // кучер Селифан
+        },
+        {
+            text: "Какой литературный жанр определил для своей поэмы сам Гоголь, назвав «Мёртвые души»?",
+            options: ["Роман", "Повесть", "Поэма", "Ода"],
+            correct: 2
+        },
+        {
+            text: "Какая фамилия у прокурора города NN (того самого, который умер от испуга после разоблачения Чичикова)?",
+            options: ["Антонович", "Тентетников", "Прокурор остался безымянным", "Ляпкин-Тяпкин"],
+            correct: 2   // действительно, в поэме прокурор не назван по фамилии
+        }
+    ];
+
+    const totalQ = questions.length;
+    document.getElementById("totalQuestionsSpan").innerText = totalQ;
+
+    let currentIndex = 0;
+    let userAnswers = new Array(totalQ).fill(null);
+    let answerStatus = new Array(totalQ).fill(false);
+    let quizCompleted = false;
+
+    const quizBodyDiv = document.getElementById("quizBody");
+    const scoreSpan = document.getElementById("scoreDisplay");
+
+    function updateScoreUI() {
+        let correctCount = answerStatus.filter(v => v === true).length;
+        scoreSpan.innerText = correctCount;
+        return correctCount;
+    }
+
+    function evaluateQuestion(idx) {
+        const selected = userAnswers[idx];
+        if (selected === null) {
+            answerStatus[idx] = false;
+            return false;
+        }
+        const isCorrect = (selected === questions[idx].correct);
+        answerStatus[idx] = isCorrect;
+        return isCorrect;
+    }
+
+    function onSelectOption(qIndex, optIndex) {
+        if (quizCompleted) return;
+        if (userAnswers[qIndex] === optIndex) return;
+        userAnswers[qIndex] = optIndex;
+        evaluateQuestion(qIndex);
+        updateScoreUI();
+        renderCurrentQuestion();
+    }
+
+    function renderCurrentQuestion() {
+        if (!quizBodyDiv) return;
+        const q = questions[currentIndex];
+        const selectedIdx = userAnswers[currentIndex];
+        const isFinished = quizCompleted;
+
+        let optionsHtml = '';
+        const letters = ['А', 'Б', 'В', 'Г'];
+
+        q.options.forEach((opt, idx) => {
+            let additionalClasses = '';
+            if (isFinished) {
+                const isCorrectAnswer = (idx === q.correct);
+                if (isCorrectAnswer) additionalClasses = 'correct-highlight';
+                if (selectedIdx === idx && selectedIdx !== null && selectedIdx !== q.correct) {
+                    additionalClasses = 'wrong-highlight';
+                }
+                if (isCorrectAnswer && selectedIdx === null) additionalClasses = 'correct-highlight';
+                additionalClasses += ' disabled-option';
+            } else {
+                if (selectedIdx === idx) additionalClasses = 'selected';
+            }
+
+            optionsHtml += `
+                <div class="option ${additionalClasses}" data-opt-index="${idx}">
+                    <div class="option-letter">${letters[idx]}</div>
+                    <div class="option-text">${escapeHtml(opt)}</div>
+                </div>
+            `;
+        });
+
+        const answeredCount = userAnswers.filter(a => a !== null).length;
+        const progressPercent = Math.round((answeredCount / totalQ) * 100);
+
+        if (isFinished) {
+            const correctTotal = answerStatus.filter(v => v === true).length;
+            const percentage = Math.round((correctTotal / totalQ) * 100);
+            let gradeMsg = '';
+            if (percentage >= 85) gradeMsg = '🎭 Браво! Вы превосходно знаете «Мёртвые души». Гоголь бы гордился!';
+            else if (percentage >= 65) gradeMsg = '📚 Хороший результат! Перечитайте главы про Плюшкина и Ноздрёва.';
+            else if (percentage >= 45) gradeMsg = '📖 Неплохо, но стоит вспомнить сюжет и характеры помещиков.';
+            else gradeMsg = '✍️ Попробуйте ещё раз: внимательнее изучите первый том поэмы.';
+
+            const finalHtml = `
+                <div class="question-text" style="background:#efe1cf;">
+                    📖 ИТОГИ ВИКТОРИНЫ · «Мёртвые души» Н. В. Гоголя
+                </div>
+                <div class="options-list">
+                    ${optionsHtml}
+                </div>
+                <div class="result-area">
+                    <div class="final-message">
+                        🪶 Верных ответов: <strong>${correctTotal} из ${totalQ}</strong> (${percentage}%)<br>
+                        ${gradeMsg}
+                    </div>
+                    <button class="btn-restart" id="restartGogolBtn" style="margin-top: 1.2rem; background:#6b4c33;">🔄 Пройти викторину снова</button>
+                </div>
+                <div class="progress-info">
+                    ✅ Зелёным выделены правильные ответы, красным — ваши ошибки.
+                </div>
+            `;
+            quizBodyDiv.innerHTML = finalHtml;
+            const restartBtn = document.getElementById("restartGogolBtn");
+            if (restartBtn) restartBtn.addEventListener("click", () => restartQuiz());
+            return;
+        }
+
+        const normalHtml = `
+            <div class="question-text">
+                ${currentIndex + 1}. ${escapeHtml(q.text)}
+            </div>
+            <div class="options-list" id="optionsContainer">
+                ${optionsHtml}
+            </div>
+            <div class="nav-buttons">
+                <button id="prevBtn" ${currentIndex === 0 ? 'disabled' : ''}>◀ Назад</button>
+                <button id="nextBtn" class="btn-next">${currentIndex === totalQ - 1 ? '🏁 Завершить' : 'Следующий →'}</button>
+            </div>
+            <div class="progress-info">
+                📍 Вопрос ${currentIndex+1} из ${totalQ} | Отвечено: ${answeredCount}/${totalQ} (${progressPercent}%)
+            </div>
+        `;
+        quizBodyDiv.innerHTML = normalHtml;
+
+        // обработчики
+        document.querySelectorAll('.option').forEach(optDiv => {
+            const optIndex = parseInt(optDiv.dataset.optIndex);
+            optDiv.addEventListener('click', () => {
+                if (!quizCompleted) onSelectOption(currentIndex, optIndex);
+            });
+        });
+
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        if (prevBtn) prevBtn.addEventListener('click', () => {
+            if (!quizCompleted && currentIndex > 0) {
+                currentIndex--;
+                renderCurrentQuestion();
+            }
+        });
+        if (nextBtn) nextBtn.addEventListener('click', () => {
+            if (quizCompleted) return;
+            if (currentIndex === totalQ - 1) {
+                finishQuiz();
+            } else {
+                currentIndex++;
+                renderCurrentQuestion();
+            }
+        });
+    }
+
+    function finishQuiz() {
+        if (quizCompleted) return;
+        for (let i = 0; i < totalQ; i++) {
+            if (userAnswers[i] !== null) evaluateQuestion(i);
+            else answerStatus[i] = false;
+        }
+        updateScoreUI();
+        quizCompleted = true;
+        renderCurrentQuestion();
+    }
+
+    function restartQuiz() {
+        currentIndex = 0;
+        userAnswers = new Array(totalQ).fill(null);
+        answerStatus = new Array(totalQ).fill(false);
+        quizCompleted = false;
+        updateScoreUI();
+        renderCurrentQuestion();
+    }
+
+    function escapeHtml(str) {
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    restartQuiz();
+</script>
+</body>
+</html>
